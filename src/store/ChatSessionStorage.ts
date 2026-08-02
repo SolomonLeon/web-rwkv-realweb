@@ -178,7 +178,10 @@ export const useChatSessionStore = create<ChatStorage>()(
         return session;
       },
       getSessionConfigurationById({ id }) {
-        return get().sessions[id].sessionConfiguration;
+        return (
+          get().sessions[id].sessionConfiguration ??
+          DEFAULT_SESSION_CONFIGURATION
+        );
       },
     }),
     {
@@ -261,7 +264,14 @@ export function useChatSession(id: string) {
   // const { llmModel: webRWKVLLMInfer } = useChatModelSession((s) => s);
 
   const activeSession = useRef<CurrentChatSession>(
-    sessions[id] as CurrentChatSession,
+    sessions[id]
+      ? {
+          ...sessions[id],
+          sessionConfiguration:
+            sessions[id].sessionConfiguration ??
+            DEFAULT_SESSION_CONFIGURATION,
+        }
+      : (sessions[id] as CurrentChatSession),
   );
 
   const getActiveMessageBlocks = () => {
@@ -480,7 +490,13 @@ export function useChatSession(id: string) {
   };
 
   useEffect(() => {
-    activeSession.current = sessions[id] as CurrentChatSession;
+    const session = sessions[id];
+    if (!session) return;
+    activeSession.current = {
+      ...session,
+      sessionConfiguration:
+        session.sessionConfiguration ?? DEFAULT_SESSION_CONFIGURATION,
+    } as CurrentChatSession;
     console.log(
       "x",
       JSON.stringify(activeSession.current.sessionConfiguration),
