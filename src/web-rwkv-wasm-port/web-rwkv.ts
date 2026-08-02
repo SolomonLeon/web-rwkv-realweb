@@ -44,6 +44,22 @@ export const DEFAULT_SESSION_CONFIGURATION = {
   defaultSamplerConfig: DEFAULT_SAMPLER_CONFIG,
 };
 
+export function normalizeSessionConfiguration(
+  config: SessionConfiguration | null | undefined,
+): SessionConfiguration {
+  if (!config) return { ...DEFAULT_SESSION_CONFIGURATION };
+  return {
+    stopTokens: config.stopTokens ?? DEFAULT_STOP_TOKENS,
+    stopWords: config.stopWords ?? DEFAULT_STOP_WORDS,
+    maxTokens: config.maxTokens ?? 2048,
+    systemPrompt: config.systemPrompt ?? null,
+    defaultSamplerConfig: {
+      ...DEFAULT_SAMPLER_CONFIG,
+      ...(config.defaultSamplerConfig ?? {}),
+    },
+  };
+}
+
 export function useWebRWKVChat(webRWKVInferPort: InferPortInterface) {
   const [selectedModelTitle, setSelectedModelName] = useState<string | null>(
     webRWKVInferPort.selectedModelTitle,

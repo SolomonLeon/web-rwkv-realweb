@@ -14,6 +14,7 @@ import {
 import {
   CompletionGenerator,
   DEFAULT_SESSION_CONFIGURATION,
+  normalizeSessionConfiguration,
   SessionConfiguration,
   useWebRWKVChat,
 } from "../web-rwkv-wasm-port/web-rwkv";
@@ -189,7 +190,9 @@ export default function ChatRouter() {
   useEffect(() => {
     if (webRWKVLLMInfer) {
       setGeneralSessionConfiguration(
-        webRWKVLLMInfer.defaultSessionConfiguration,
+        normalizeSessionConfiguration(
+          webRWKVLLMInfer.defaultSessionConfiguration,
+        ),
       );
     }
   }, [webRWKVLLMInfer]);

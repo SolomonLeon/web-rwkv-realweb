@@ -7,6 +7,7 @@ import { create } from "zustand";
 import {
   CompletionMessage,
   DEFAULT_SESSION_CONFIGURATION,
+  normalizeSessionConfiguration,
   SessionConfiguration,
 } from "../web-rwkv-wasm-port/web-rwkv";
 import { useChatModelSession } from "./ModelStorage";
@@ -178,9 +179,8 @@ export const useChatSessionStore = create<ChatStorage>()(
         return session;
       },
       getSessionConfigurationById({ id }) {
-        return (
-          get().sessions[id].sessionConfiguration ??
-          DEFAULT_SESSION_CONFIGURATION
+        return normalizeSessionConfiguration(
+          get().sessions[id]?.sessionConfiguration,
         );
       },
     }),
@@ -267,9 +267,9 @@ export function useChatSession(id: string) {
     sessions[id]
       ? {
           ...sessions[id],
-          sessionConfiguration:
-            sessions[id].sessionConfiguration ??
-            DEFAULT_SESSION_CONFIGURATION,
+          sessionConfiguration: normalizeSessionConfiguration(
+            sessions[id].sessionConfiguration,
+          ),
         }
       : (sessions[id] as CurrentChatSession),
   );
@@ -494,8 +494,9 @@ export function useChatSession(id: string) {
     if (!session) return;
     activeSession.current = {
       ...session,
-      sessionConfiguration:
-        session.sessionConfiguration ?? DEFAULT_SESSION_CONFIGURATION,
+      sessionConfiguration: normalizeSessionConfiguration(
+        session.sessionConfiguration,
+      ),
     } as CurrentChatSession;
     console.log(
       "x",
